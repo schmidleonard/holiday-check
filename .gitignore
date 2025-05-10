@@ -1,0 +1,9 @@
+# Ignore all .env-files
+*.env*
+**/.env*
+
+# Allow env template
+!**/*.env.template
+
+
+node_modules/
