@@ -3,6 +3,8 @@ const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const { type } = require("os");
+const multer = require("multer");
+const path = require("path");
 
 const port = process.env.PORT;
 const dbURL = process.env.DB_URL;
@@ -11,21 +13,43 @@ const hotel = express();
 
 hotel.use(express.json());
 hotel.use(cors());
+// Sharing static files
+hotel.use("/uploads", express.static("uploads"));
+
 
 
 const hotelSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  short_name: { type: String, maxLength: 10 },
-  rooms: { type: Number, required: true },
+  name: { type: String, required: true},
+  short_name: { type: String, required: true},
+  rooms: { type: Number, required: true},
   free_rooms: { type: Number, required: true},
-  room_price: { type: Number},
-  picture_one: { type: String, required: true },
+  room_price: { type: Number, required: true},
+  picture_one: { type: String, required: true},
   picture_two: { type: String},
   picture_three: { type: String},
   picture_four: { type: String}
 });
 
 const Hotels = mongoose.model("Hotels", hotelSchema);
+
+// Multer-Configuration
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "uploads/",
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, `photo-${uniqueSuffix}${path.extname(file.originalname)}`);
+    }
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 * 4 }, // 5 MB per picture × 4
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Nur Bilder erlaubt!"), false);
+  }
+});
+
+// Accept 4 photos in field "photos"
+const uploadPhotos = upload.array("photos", 4);
 
 
 // Routes
@@ -48,15 +72,31 @@ hotel.get("/hotel/:name", async (req, res) => {
 })
 
 
-hotel.post("/hotel", async (req, res) => {
+hotel.post("/hotel", uploadPhotos, async (req, res) => {
   try {
-    const newHotel = new Hotels(req.body);
+    const { name, short_name, rooms, free_rooms, room_price } = req.body;
+    const files = req.files || [];
+    if (files.length > 4) {
+      return res.status(400).json({ message: "maximum of 4 pictures allowed" });
+    }
+
+    const pictureFields = ["picture_one", "picture_two", "picture_three", "picture_four"];
+    const hotelData = { name, short_name, rooms, free_rooms, room_price };
+    files.forEach((file, index) => {
+      hotelData[pictureFields[index]] = file.path;
+    });
+    // Fallback for empty fields
+    pictureFields.forEach(f => { if (!hotelData[f]) hotelData[f] = ""; });
+
+    const newHotel = new Hotels(hotelData);
     await newHotel.save();
     res.status(201).json(newHotel);
-  } catch(err) {
-    res.status(500).json({ message: err });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
+
+
 
 hotel.put("/hotel/:name", async (req, res) => {
   try {
