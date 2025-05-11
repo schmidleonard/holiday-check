@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
+const { type } = require("os");
 
 const port = process.env.PORT;
 const dbURL = process.env.DB_URL;
@@ -14,7 +15,14 @@ hotel.use(cors());
 
 const hotelSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  short_name: { type: String, maxLength: 5 }
+  short_name: { type: String, maxLength: 10 },
+  rooms: { type: Number, required: true },
+  free_rooms: { type: Number, required: true},
+  room_price: { type: Number},
+  picture_one: { type: String, required: true },
+  picture_two: { type: String},
+  picture_three: { type: String},
+  picture_four: { type: String}
 });
 
 const Hotels = mongoose.model("Hotels", hotelSchema);
