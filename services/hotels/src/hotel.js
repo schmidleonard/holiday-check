@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
-// const { type } = require("os");
 const multer = require("multer");
 const path = require("path");
 const fs = require('fs');
@@ -138,7 +137,6 @@ hotel.delete("/hotel/:id", async (req, res) => {
     ].filter(path => path) // filter empty path
     .map(relativePath => path.join(__dirname, "../uploads", path.basename(relativePath))); 
 
-    
     await Promise.all(
       imagesToDelete.map(async (path) => {
         try {
