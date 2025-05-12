@@ -2,9 +2,11 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
-const { type } = require("os");
+// const { type } = require("os");
 const multer = require("multer");
 const path = require("path");
+const fs = require('fs');
+const fsPromises = fs.promises;
 
 const port = process.env.PORT;
 const dbURL = process.env.DB_URL;
@@ -14,8 +16,7 @@ const hotel = express();
 hotel.use(express.json());
 hotel.use(cors());
 // Sharing static files
-hotel.use("/uploads", express.static("uploads"));
-
+hotel.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 
 const hotelSchema = new mongoose.Schema({
@@ -35,7 +36,11 @@ const Hotels = mongoose.model("Hotels", hotelSchema);
 // Multer-Configuration
 const upload = multer({
   storage: multer.diskStorage({
-    destination: "uploads/",
+    destination: (req, file, cb) => {
+      const uploadDir = path.join(__dirname, "../uploads"); // absolute path
+      fs.mkdirSync(uploadDir, { recursive: true }); 
+      cb(null, uploadDir);
+    },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
       cb(null, `photo-${uniqueSuffix}${path.extname(file.originalname)}`);
@@ -44,11 +49,11 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 * 4 }, // 5 MB per picture × 4
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) cb(null, true);
-    else cb(new Error("Nur Bilder erlaubt!"), false);
+    else cb(new Error("only pictures allowed!"), false);
   }
 });
 
-// Accept 4 photos in field "photos"
+// Accept 4 files in field "photos"
 const uploadPhotos = upload.array("photos", 4);
 
 
@@ -83,7 +88,7 @@ hotel.post("/hotel", uploadPhotos, async (req, res) => {
     const pictureFields = ["picture_one", "picture_two", "picture_three", "picture_four"];
     const hotelData = { name, short_name, rooms, free_rooms, room_price };
     files.forEach((file, index) => {
-      hotelData[pictureFields[index]] = file.path;
+      hotelData[pictureFields[index]] = path.join("uploads", file.filename); // relative path
     });
     // Fallback for empty fields
     pictureFields.forEach(f => { if (!hotelData[f]) hotelData[f] = ""; });
@@ -114,17 +119,55 @@ hotel.put("/hotel/:name", async (req, res) => {
   }
 })
 
+
 hotel.delete("/hotel/:id", async (req, res) => {
   try {
+    // delete Hotel
     const deletedHotel = await Hotels.findByIdAndDelete(req.params.id);
+    
     if (!deletedHotel) {
       return res.status(404).json({ message: "Hotel not found" });
     }
-    res.status(200).json({ message: "Hotel deleted", hotel: deletedHotel });
+
+    // delete pictures
+    const imagesToDelete = [
+      deletedHotel.picture_one,
+      deletedHotel.picture_two,
+      deletedHotel.picture_three,
+      deletedHotel.picture_four
+    ].filter(path => path) // filter empty path
+    .map(relativePath => path.join(__dirname, "../uploads", path.basename(relativePath))); 
+
+    
+    await Promise.all(
+      imagesToDelete.map(async (path) => {
+        try {
+          await fsPromises.unlink(path);
+          console.log(`Deleted file: ${path}`);
+        } catch (err) {
+          if (err.code === 'ENOENT') {
+            console.log(`File ${path} does not exist, skipping deletion`);
+          } else {
+            throw err;
+          }
+        }
+      })
+    );
+
+    res.status(200).json({
+      message: "Hotel and associated images deleted",
+      hotel: deletedHotel
+    });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Error during deletion:", err);
+    res.status(500).json({ 
+      message: "Deletion failed",
+      error: err.message 
+    });
   }
 });
+
 
 
 
