@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+  <div class="container my-5">
+    <h1 class="mb-4">Auto hinzufügen</h1>
+    <form id="carForm" enctype="multipart/form-data" class="card p-4 shadow-sm">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <input type="text" class="form-control" name="name" placeholder="Name" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" name="brand" placeholder="Marke" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" name="model" placeholder="Modell" required>
+        </div>
+        <div class="col-md-6">
+          <input type="date" class="form-control" name="manufactor_date" required>
+        </div>
+        <div class="col-md-4">
+          <input type="number" class="form-control" name="hp" placeholder="PS">
+        </div>
+        <div class="col-md-4">
+          <input type="number" class="form-control" name="seats" placeholder="Sitze" required>
+        </div>
+        <div class="col-md-4">
+          <input type="number" class="form-control" name="price" placeholder="Preis (€)" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" name="fuel" placeholder="Kraftstoff" required>
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+          <label class="form-check-label me-2" for="available">Verfügbar:</label>
+          <input class="form-check-input" type="checkbox" name="available" id="available">
+        </div>
+        <div class="col-md-12">
+          <input type="file" class="form-control" name="photo" accept="image/*" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Speichern</button>
+    </form>
+
+    <hr class="my-5">
+
+    <h2 class="mb-4">Alle Autos</h2>
+    <div id="carList" class="row g-4"></div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:3001'; // Passe den Port ggf. an
+
+    // Formular absenden
+    document.getElementById('carForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const formData = new FormData(form);
+
+      formData.set('available', form.available.checked);
+
+      try {
+        const res = await fetch(`${API_URL}/cars`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) throw new Error("Fehler beim Speichern");
+
+        alert("Auto erfolgreich gespeichert!");
+        form.reset();
+        loadCars();
+      } catch (err) {
+        alert("Fehler: " + err.message);
+      }
+    });
+
+    // Autos laden
+    async function loadCars() {
+      try {
+        const res = await fetch(`${API_URL}/cars`);
+        const cars = await res.json();
+
+        const carList = document.getElementById('carList');
+        carList.innerHTML = "";
+
+        cars.forEach(car => {
+          const col = document.createElement('div');
+          col.className = "col-md-4";
+
+          col.innerHTML = `
+            <div class="card h-100 shadow-sm">
+              <img src="${API_URL}/${car.picture}" class="card-img-top" alt="${car.name}">
+              <div class="card-body">
+                <h5 class="card-title">${car.name} (${car.brand})</h5>
+                <p class="card-text">
+                  Modell: ${car.model}<br>
+                  PS: ${car.hp || '-'}, Sitze: ${car.seats}<br>
+                  Preis: ${car.price} €, Kraftstoff: ${car.fuel}<br>
+                  Verfügbar: ${car.available ? 'Ja' : 'Nein'}<br>
+                  Baujahr: ${new Date(car.manufactor_date).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          `;
+
+          carList.appendChild(col);
+        });
+
+      } catch (err) {
+        console.error("Fehler beim Laden der Autos:", err);
+      }
+    }
+
+    // Initial laden
+    loadCars();
+  </script>
+
+</body>
+</html>
