@@ -27,6 +27,7 @@ const carsSchema = mongoose.Schema({
     price: { type: Number, required: true },
     available: { type: Boolean, required: true },
     fuel: { type: String, required: true },
+    location: { type: String, required: true},
     picture: { type: String, required: true }
 })
 
@@ -78,7 +79,7 @@ car.get("/car/:name", async (req, res) => {
 
 car.post("/car", uploadPhoto, async (req, res) => {
     try {
-        const { name, brand, model, manufactor_date, hp, seats, price, available, fuel } = req.body;
+        const { name, brand, model, manufactor_date, hp, seats, price, available, fuel, location } = req.body;
         const file = req.file;
         const carData = {
             name,
@@ -90,6 +91,7 @@ car.post("/car", uploadPhoto, async (req, res) => {
             price,
             available,
             fuel,
+            location,
             picture: file ? path.join("uploads", file.filename) : ""
         }
         const newCar = new Cars(carData);
