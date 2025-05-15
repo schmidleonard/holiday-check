@@ -3,12 +3,12 @@ const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-const port = process.env.port;
+const port = process.env.PORT;
 const dbURL = process.env.DBURL;
 
 const flight = express();
 
-flight.use(express.json);
+flight.use(express.json());
 flight.use(cors());
 
 
@@ -17,7 +17,7 @@ const flightsSchema = mongoose.Schema({
     destination: {type: String, required: true},
     aircraft: {type: String},
     airline: {type: String, required: true},
-    departure_time: {type: Date}, required: true,
+    departure_time: {type: Date, required: true},
     sheduled_time: {type: Date, required: true},
     price: {type: Number, required: true},
     available_seats: {type: Number}
@@ -96,6 +96,6 @@ async function main () {
     console.log("database connected");
 
     flight.listen(port, () => {
-        console.log("server /'flights/' is running on port " + port);
+        console.log("server 'flights' is running on port " + port);
     })
 }
