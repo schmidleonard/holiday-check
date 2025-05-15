@@ -4,8 +4,7 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const multer = require("multer");
 const path = require("path");
-const fs = require('fs');
-const { type } = require("os");
+const fs = require("fs");
 const fsPromises = fs.promises;
 
 const port = process.env.PORT;
@@ -19,16 +18,16 @@ car.use(cors());
 car.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 const carsSchema = mongoose.Schema({
-    name: {type: String, required: true},
-    brand: {type: String, required: true},
-    model: {type: String, required: true},
-    manufactor_date: {type: Date, required: true},
-    hp: {type: Number},
-    seats: {type: Number, required: true},
-    price: {type: Number, required: true},
-    available: {type: Boolean, required: true},
-    fuel: {type: String, required: true},
-    picture: {type: String, required: true}
+    name: { type: String, required: true },
+    brand: { type: String, required: true },
+    model: { type: String, required: true },
+    manufactor_date: { type: Date, required: true },
+    hp: { type: Number },
+    seats: { type: Number, required: true },
+    price: { type: Number, required: true },
+    available: { type: Boolean, required: true },
+    fuel: { type: String, required: true },
+    picture: { type: String, required: true }
 })
 
 const Cars = mongoose.model("Cars", carsSchema);
@@ -63,7 +62,7 @@ car.get("/car", async (req, res) => {
     try {
         const allCars = await Cars.find();
         res.status(200).json(allCars);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({ message: err });
     }
 });
@@ -72,26 +71,27 @@ car.get("/car/:name", async (req, res) => {
     try {
         const findCar = await Cars.findOne({ name: req.params.name });
         res.status(200).json(findCar);
-    } catch(err) {
+    } catch (err) {
         res.status(500).json({ message: err });
-    } 
+    }
 })
 
 car.post("/car", uploadPhoto, async (req, res) => {
     try {
-        const { name, brand, model, manufactor_date, hp, seats, price, available, fuel} = req.body;
+        const { name, brand, model, manufactor_date, hp, seats, price, available, fuel } = req.body;
         const file = req.file;
-        const carData = { 
+        const carData = {
             name,
             brand,
             model,
             manufactor_date,
             hp,
             seats,
-            price, 
-            available, 
-            fuel, 
-            picture: file ? path.join("uploads", file.filename) : "" }
+            price,
+            available,
+            fuel,
+            picture: file ? path.join("uploads", file.filename) : ""
+        }
         const newCar = new Cars(carData);
         await newCar.save();
         res.status(201).json(newCar);
@@ -101,28 +101,28 @@ car.post("/car", uploadPhoto, async (req, res) => {
 })
 
 car.put("/car/:name", async (req, res) => {
-  try{
-    const updatedCar = await Cars.findOneAndUpdate(
-        { name: req.params.name },
-        req.body,
-        { new: true, runValidators: true }
-    );
-    if (!updatedCar) {
-        return res.status(404).json({ message: "Car not found" });
-    }
-    res.status(200).json(updatedCar);  
+    try {
+        const updatedCar = await Cars.findOneAndUpdate(
+            { name: req.params.name },
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!updatedCar) {
+            return res.status(404).json({ message: "Car not found" });
+        }
+        res.status(200).json(updatedCar);
     } catch (err) {
         res.status(500).json({ message: err.message });
-    }  
+    }
 })
 
 
 car.delete("/car/:id", async (req, res) => {
-    try{
+    try {
         // delete Car
         const deletedCar = await Cars.findByIdAndDelete(req.params.id);
 
-        if(!deletedCar) {
+        if (!deletedCar) {
             return res.status(404).json({ message: "Car not found" });
         }
 
@@ -131,19 +131,19 @@ car.delete("/car/:id", async (req, res) => {
 
         try {
             await fsPromises.unlink(imageToDelete);
-        console.log(`Deleted file: ${imageToDelete}`);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            console.log(`File ${imageToDelete} does not exist, skipping deletion`);
-        } else {
-            throw err;
+            console.log(`Deleted file: ${imageToDelete}`);
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                console.log(`File ${imageToDelete} does not exist, skipping deletion`);
+            } else {
+                throw err;
+            }
         }
-    }
 
-    return res.status(200).json({
-        message: "Hotel and associated images deleted",
-        car: deletedCar
-    });
+        return res.status(200).json({
+            message: "Hotel and associated images deleted",
+            car: deletedCar
+        });
     } catch (err) {
         console.error("Error during deletion:", err);
         return res.status(500).json({ message: "Internal Server Error" });
