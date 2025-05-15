@@ -1,53 +1,27 @@
-name: 🐛 Bug Report
-description: Report something that isn't working correctly
+---
+name: Bug Report
+about: Report something that isn't working correctly
 title: "[Bug] "
-labels: [bug]
-assignees: []
+labels: bug
+assignees:
+---
 
-body:
-  - type: markdown
-    attributes:
-      value: |
-        ## 🐛 Bug Report
+## 🐛 Bug Report
 
-  - type: textarea
-    id: description
-    attributes:
-      label: Description
-      description: What happened and what did you expect to happen?
-      placeholder: Clearly describe the issue and expected behavior.
-    validations:
-      required: true
+**Description**  
+What happened, and what did you expect to happen?
 
-  - type: textarea
-    id: steps
-    attributes:
-      label: Steps to Reproduce
-      description: List the steps to trigger the bug.
-      placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. See error
-    validations:
-      required: true
+...
 
-  - type: textarea
-    id: environment
-    attributes:
-      label: Environment
-      description: Information about your environment.
-      placeholder: |
-        - OS: Windows/Linux/macOS
-        - Browser: Chrome/Firefox
-        - App Version: x.y.z
-    validations:
-      required: false
+**Steps to Reproduce**  
+1. Go to '...'
+2. Click on '...'
+3. Observe the issue
 
-  - type: textarea
-    id: logs
-    attributes:
-      label: Relevant Logs or Screenshots
-      description: Paste any logs or screenshots that help explain the problem.
-      placeholder: Drag and drop or paste...
-    validations:
-      required: false
+**Environment**  
+- OS: Windows / macOS / Linux
+- Browser: Chrome / Firefox / Safari
+- App Version: vX.Y.Z
+
+**Relevant Logs or Screenshots**  
+Paste logs, errors, or screenshots that help explain the issue.
