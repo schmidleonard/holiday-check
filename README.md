@@ -15,12 +15,13 @@ A slim monorepo project with multiple Node.js microservices and MongoDB integrat
 
 1. **Clone the repository:**  
    ```
-   git clone 
+   git clone https://github.com/schmidleonard/holiday-check.git
    cd holiday-check
    ```
 
-2. **Install dependencies (in the root directory):**  
+2. **Install dependencies: (for each service)**  
    ```
+   cd "service"
    npm install
    ```
 
