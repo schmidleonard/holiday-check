@@ -1,0 +1,148 @@
+# ===================================================
+# HOLIDAY-CHECK RATING SERVICE API TESTS
+# ===================================================
+
+### 1. Hotel Service testen - Alle Hotels abrufen
+GET http://localhost:3000/hotel
+Content-Type: application/json
+
+### 2. Spezifisches Hotel abrufen (um ID zu bekommen)
+GET http://localhost:3000/hotel/Grand Hotel Vienna
+Content-Type: application/json
+
+### ===================================================
+### RATING SERVICE TESTS
+### ===================================================
+
+### 3. Erste Bewertung hinzufügen
+# WICHTIG: Ersetzen Sie "IHRE_HOTEL_ID_HIER" mit der echten ObjectId aus MongoDB
+POST http://localhost:3001/reviews
+Content-Type: application/json
+
+{
+  "hotel_id": "68330aa6f7baa8c67e6c4bd1",
+  "reviewer_name": "Max Mustermann",
+  "reviewer_email": "max@test.com",
+  "rating": 5,
+  "comment": "Ausgezeichnetes Hotel! Sehr sauber und freundliches Personal."
+}
+
+### 4. Zweite Bewertung hinzufügen
+POST http://localhost:3001/reviews
+Content-Type: application/json
+
+{
+  "hotel_id": "68330aa6f7baa8c67e6c4bd1",
+  "reviewer_name": "Anna Schmidt",
+  "reviewer_email": "anna@email.com",
+  "rating": 4,
+  "comment": "Sehr schönes Hotel mit tollem Service. Nur das WLAN war etwas langsam."
+}
+
+### 5. Dritte Bewertung hinzufügen
+POST http://localhost:3001/reviews
+Content-Type: application/json
+
+{
+  "hotel_id": "68330aa6f7baa8c67e6c4bd0",
+  "reviewer_name": "Tom Mueller",
+  "reviewer_email": "tom@email.com",
+  "rating": 3,
+  "comment": "Okay Hotel, aber für den Preis hätte ich mehr erwartet."
+}
+
+### 6. Alle Bewertungen für ein Hotel abrufen
+GET http://localhost:3001/reviews/68330aa6f7baa8c67e6c4bd1
+Content-Type: application/json
+
+### 7. Bewertungsstatistiken abrufen
+GET http://localhost:3001/reviews/68330aa6f7baa8c67e6c4bd1
+Content-Type: application/json
+
+### ===================================================
+### FEHLERHAFTE REQUESTS TESTEN
+### ===================================================
+
+### 8. Bewertung ohne Pflichtfelder (sollte Fehler 400 geben)
+POST http://localhost:3001/reviews
+Content-Type: application/json
+
+{
+  "hotel_id": "IHRE_HOTEL_ID_HIER",
+  "reviewer_name": "Test User"
+}
+
+### 9. Bewertung mit ungültigem Rating (sollte Fehler 400 geben)
+POST http://localhost:3001/reviews
+Content-Type: application/json
+
+{
+  "hotel_id": "68330aa6f7baa8c67e6c4bd1",
+  "reviewer_name": "Test User",
+  "reviewer_email": "test@email.com",
+  "rating": 6,
+  "comment": "Zu hohe Bewertung"
+}
+
+### 10. Bewertungen für nicht-existierendes Hotel
+GET http://localhost:3001/reviews/000000000000000000000000
+Content-Type: application/json
+
+### ===================================================
+### LÖSCHEN TESTEN (nachdem Sie eine Review-ID haben)
+### ===================================================
+
+### 11. Bewertung löschen
+# WICHTIG: Ersetzen Sie "REVIEW_ID_HIER" mit einer echten Review-ID
+DELETE http://localhost:3001/reviews/683311245d1e5943d20296a4
+Content-Type: application/json
+
+### ===================================================
+### ZUSÄTZLICHE HOTEL TESTS
+### ===================================================
+
+### 12. Neues Hotel erstellen (um mehr Test-Daten zu haben)
+POST http://localhost:3000/hotel
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="name"
+
+Test Hotel München
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="short_name"
+
+Test München
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="rooms"
+
+100
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="free_rooms"
+
+20
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="room_price"
+
+85.50
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### ===================================================
+### ANLEITUNG:
+### ===================================================
+
+# 1. Installieren Sie die "REST Client" Extension in VS Code
+# 2. Öffnen Sie diese Datei in VS Code
+# 3. Starten Sie beide Services:
+#    - node services/hotels/src/hotel.js (Port 3000)
+#    - node services/hotels/src/ratingService.js (Port 3001)
+# 4. Ersetzen Sie "IHRE_HOTEL_ID_HIER" mit einer echten Hotel-ID
+# 5. Klicken Sie auf "Send Request" über jedem ### Request
+# 6. Schauen Sie sich die Antworten im rechten Panel an
+
+### ERWARTETE REIHENFOLGE:
+# 1. Request #1 ausführen → Hotel-Liste mit IDs erhalten
+# 2. Hotel-ID kopieren und in alle Requests einfügen
+# 3. Requests #3-5 ausführen → Bewertungen hinzufügen
+# 4. Request #6 ausführen → Bewertungen anzeigen
+# 5. Request #7 ausführen → Statistiken anzeigen (sollte Durchschnitt ~4.0 zeigen)
