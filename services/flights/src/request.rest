@@ -1,0 +1,145 @@
+### Airline Rating Service Tests
+### Base URL: http://localhost:3003
+
+### 1. Neue Fluggesellschaft-Bewertung erstellen
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_001",
+  "reviewer_name": "Robert Schneider",
+  "reviewer_email": "robert@example.com",
+  "rating": 5,
+  "comment": "Phantastischer Flug! Pünktlich, komfortabel und exzellenter Service."
+}
+
+###
+
+### 2. Weitere Fluggesellschaft-Bewertung erstellen
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_001",
+  "reviewer_name": "Maria Hoffmann",
+  "reviewer_email": "maria@example.com",
+  "rating": 3,
+  "comment": "Durchschnittlicher Flug. Essen war okay, aber Sitze waren unbequem."
+}
+
+###
+
+### 3. Dritte Fluggesellschaft-Bewertung erstellen
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_001",
+  "reviewer_name": "Andreas Richter",
+  "reviewer_email": "andreas@example.com",
+  "rating": 1,
+  "comment": "Schreckliche Erfahrung! Verspätung von 3 Stunden, kein Entgegenkommen."
+}
+
+###
+
+### 4. Bewertung für andere Fluggesellschaft erstellen
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_002",
+  "reviewer_name": "Christina Meyer",
+  "reviewer_email": "christina@example.com",
+  "rating": 4,
+  "comment": "Guter Service und pünktlich. Preise sind fair, würde wieder fliegen."
+}
+
+###
+
+### 5. Weitere Bewertung für Airline 002
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_002",
+  "reviewer_name": "Stefan Wolf",
+  "reviewer_email": "stefan@example.com",
+  "rating": 5,
+  "comment": "Beste Airline! Freundliches Personal, moderne Flugzeuge, top Entertainment."
+}
+
+###
+
+### 6. Alle Bewertungen für Fluggesellschaft 001 abrufen
+GET http://localhost:3003/reviews/airline_001
+
+###
+
+### 7. Alle Bewertungen für Fluggesellschaft 002 abrufen
+GET http://localhost:3003/reviews/airline_002
+
+###
+
+### 8. Statistiken für Fluggesellschaft 001 abrufen
+GET http://localhost:3003/reviews/airline_001/stats
+
+###
+
+### 9. Statistiken für Fluggesellschaft 002 abrufen
+GET http://localhost:3003/reviews/airline_002/stats
+
+###
+
+### 10. Statistiken für nicht existierende Fluggesellschaft abrufen
+GET http://localhost:3003/reviews/airline_999/stats
+
+###
+
+### 11. Bewertung mit fehlenden Feldern (sollte Fehler geben)
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_001",
+  "reviewer_name": "Test User",
+  "reviewer_email": "test@example.com"
+}
+
+###
+
+### 12. Bewertung mit ungültigem Rating (sollte Fehler geben)
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_001",
+  "reviewer_name": "Test User",
+  "reviewer_email": "test@example.com",
+  "rating": 7,
+  "comment": "Test Comment"
+}
+
+###
+
+### 13. Bewertung löschen (ID nach dem Erstellen einer Bewertung ersetzen)
+DELETE http://localhost:3003/reviews/REVIEW_ID_HERE
+
+###
+
+### 14. Nicht existierende Bewertung löschen (sollte 404 geben)
+DELETE http://localhost:3003/reviews/507f1f77bcf86cd799439011
+
+###
+
+### 15. Bewertung mit leerem Kommentar (sollte Fehler geben)
+POST http://localhost:3003/reviews
+Content-Type: application/json
+
+{
+  "airline_id": "airline_001",
+  "reviewer_name": "Test User",
+  "reviewer_email": "test@example.com",
+  "rating": 4,
+  "comment": ""
+}

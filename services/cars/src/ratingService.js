@@ -3,15 +3,15 @@ const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
 
-const port = process.env.HOTEL_RATING_PORT || 3001;
+const port = process.env.CAR_RATING_PORT || 3002;
 const dbURL = process.env.DB_URL;
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-const reviewSchema = new mongoose.Schema({
-  hotel_id: { type: String, required: true, trim: true },
+const carReviewSchema = new mongoose.Schema({
+  car_id: { type: String, required: true, trim: true },
   reviewer_name: { type: String, required: true, trim: true, maxlength: 100 },
   reviewer_email: { type: String, required: true, trim: true, lowercase: true },
   rating: { type: Number, required: true, min: 1, max: 5 },
@@ -19,12 +19,12 @@ const reviewSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now }
 });
 
-const HotelReviews = mongoose.model("HotelReviews", reviewSchema);
+const CarReviews = mongoose.model("CarReviews", carReviewSchema);
 
-// Alle Bewertungen für ein Hotel abrufen
-app.get("/reviews/:hotelId", async (req, res) => {
+// Alle Bewertungen für eine Autovermietung abrufen
+app.get("/reviews/:carId", async (req, res) => {
   try {
-    const reviews = await HotelReviews.find({ hotel_id: req.params.hotelId })
+    const reviews = await CarReviews.find({ car_id: req.params.carId })
       .sort({ created_at: -1 });
     res.json({ success: true, data: reviews });
   } catch (err) {
@@ -35,9 +35,9 @@ app.get("/reviews/:hotelId", async (req, res) => {
 // Neue Bewertung erstellen
 app.post("/reviews", async (req, res) => {
   try {
-    const { hotel_id, reviewer_name, reviewer_email, rating, comment } = req.body;
+    const { car_id, reviewer_name, reviewer_email, rating, comment } = req.body;
     
-    if (!hotel_id || !reviewer_name || !reviewer_email || !rating || !comment) {
+    if (!car_id || !reviewer_name || !reviewer_email || !rating || !comment) {
       return res.status(400).json({ success: false, message: "Alle Felder erforderlich" });
     }
     
@@ -45,7 +45,7 @@ app.post("/reviews", async (req, res) => {
       return res.status(400).json({ success: false, message: "Rating muss zwischen 1-5 sein" });
     }
 
-    const review = new HotelReviews({ hotel_id, reviewer_name, reviewer_email, rating, comment });
+    const review = new CarReviews({ car_id, reviewer_name, reviewer_email, rating, comment });
     await review.save();
     
     res.status(201).json({ success: true, data: review });
@@ -57,7 +57,7 @@ app.post("/reviews", async (req, res) => {
 // Bewertung löschen
 app.delete("/reviews/:reviewId", async (req, res) => {
   try {
-    const review = await HotelReviews.findByIdAndDelete(req.params.reviewId);
+    const review = await CarReviews.findByIdAndDelete(req.params.reviewId);
     if (!review) {
       return res.status(404).json({ success: false, message: "Bewertung nicht gefunden" });
     }
@@ -67,11 +67,11 @@ app.delete("/reviews/:reviewId", async (req, res) => {
   }
 });
 
-// Bewertungsstatistiken für ein Hotel
-app.get("/reviews/:hotelId/stats", async (req, res) => {
+// Bewertungsstatistiken für eine Autovermietung
+app.get("/reviews/:carId/stats", async (req, res) => {
   try {
-    const hotelId = req.params.hotelId;
-    const reviews = await HotelReviews.find({ hotel_id: hotelId });
+    const carId = req.params.carId;
+    const reviews = await CarReviews.find({ car_id: carId });
     
     if (reviews.length === 0) {
       return res.json({ 
@@ -103,9 +103,9 @@ app.get("/reviews/:hotelId/stats", async (req, res) => {
 
 mongoose.connect(dbURL)
   .then(() => {
-    console.log("Hotel Rating Service: DB verbunden");
+    console.log("Car Rental Rating Service: DB verbunden");
     app.listen(port, () => {
-      console.log(`Hotel Rating Service läuft auf Port ${port}`);
+      console.log(`Car Rental Rating Service läuft auf Port ${port}`);
     });
   })
   .catch(err => console.error("DB Verbindungsfehler:", err));
