@@ -1,0 +1,327 @@
+### Basis-URL für alle Requests
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+# ============================================
+# 1. HEALTH CHECK & SERVICE STATUS
+# ============================================
+
+### Service Gesundheitscheck
+GET {{baseUrl}}/health
+
+# ============================================
+# 2. CREATE - NEUE BEWERTUNGEN ERSTELLEN
+# ============================================
+
+### Hotel-Bewertung erstellen
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "hotel",
+  "entity_id": "hotel_grand_central_123",
+  "reviewer_name": "Max Mustermann",
+  "reviewer_email": "max.mustermann@example.com",
+  "rating": 5,
+  "comment": "Fantastisches Hotel! Sehr saubere Zimmer, freundliches Personal und perfekte Lage im Stadtzentrum. Würde definitiv wieder buchen!"
+}
+
+###
+
+### Airline-Bewertung erstellen
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "airline",
+  "entity_id": "lufthansa_456",
+  "reviewer_name": "Anna Schmidt",
+  "reviewer_email": "anna.schmidt@example.com",
+  "rating": 4,
+  "comment": "Guter Service und pünktlicher Flug. Das Essen könnte etwas besser sein, aber insgesamt zufrieden."
+}
+
+###
+
+### Car Rental-Bewertung erstellen
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "car",
+  "entity_id": "hertz_compact_789",
+  "reviewer_name": "Thomas Weber",
+  "reviewer_email": "thomas.weber@example.com",
+  "rating": 3,
+  "comment": "Das Auto war in Ordnung, aber die Abholung hat ewig gedauert. Personal war aber hilfsbereit."
+}
+
+###
+
+### Weitere Test-Bewertungen erstellen
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "hotel",
+  "entity_id": "hotel_grand_central_123",
+  "reviewer_name": "Lisa Müller",
+  "reviewer_email": "lisa.mueller@example.com",
+  "rating": 2,
+  "comment": "Leider enttäuschend. Zimmer war nicht sauber und sehr laut durch Straßenlärm."
+}
+
+###
+
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "airline",
+  "entity_id": "lufthansa_456",
+  "reviewer_name": "Peter Klein",
+  "reviewer_email": "peter.klein@example.com",
+  "rating": 5,
+  "comment": "Exzellenter Service! Flug war pünktlich, Personal sehr freundlich und das Essen war überraschend gut."
+}
+
+# ============================================
+# 3. READ - BEWERTUNGEN ABRUFEN
+# ============================================
+
+### Alle Hotel-Bewertungen abrufen
+GET {{baseUrl}}/reviews/hotel/hotel_grand_central_123
+
+###
+
+### Alle Airline-Bewertungen abrufen
+GET {{baseUrl}}/reviews/airline/lufthansa_456
+
+###
+
+### Alle Car Rental-Bewertungen abrufen
+GET {{baseUrl}}/reviews/car/hertz_compact_789
+
+###
+
+### Einzelne Bewertung abrufen (ReviewId nach dem Erstellen einer Bewertung verwenden)
+GET {{baseUrl}}/reviews/single/REVIEW_ID_HIER_EINFÜGEN
+
+###
+
+### Alle Bewertungen mit Paginierung abrufen
+GET {{baseUrl}}/reviews?page=1&limit=5
+
+###
+
+### Bewertungen nach Service-Typ filtern
+GET {{baseUrl}}/reviews?service_type=hotel&page=1&limit=10
+
+###
+
+### Bewertungen nach Rating filtern
+GET {{baseUrl}}/reviews?rating_min=4&rating_max=5&limit=10
+
+###
+
+### Bewertungen sortieren (neueste zuerst)
+GET {{baseUrl}}/reviews?sort_by=created_at&sort_order=desc&limit=10
+
+###
+
+### Bewertungen sortieren (beste zuerst)
+GET {{baseUrl}}/reviews?sort_by=rating&sort_order=desc&limit=10
+
+###
+
+### Komplexe Filterung und Sortierung
+GET {{baseUrl}}/reviews?service_type=hotel&rating_min=3&sort_by=rating&sort_order=desc&page=1&limit=5
+
+# ============================================
+# 4. STATISTICS - BEWERTUNGSSTATISTIKEN
+# ============================================
+
+### Hotel-Statistiken abrufen
+GET {{baseUrl}}/reviews/hotel/hotel_grand_central_123/stats
+
+###
+
+### Airline-Statistiken abrufen
+GET {{baseUrl}}/reviews/airline/lufthansa_456/stats
+
+###
+
+### Car Rental-Statistiken abrufen
+GET {{baseUrl}}/reviews/car/hertz_compact_789/stats
+
+# ============================================
+# 5. UPDATE - BEWERTUNGEN AKTUALISIEREN
+# ============================================
+
+### Bewertung vollständig aktualisieren (ReviewId nach dem Erstellen verwenden)
+PUT {{baseUrl}}/reviews/REVIEW_ID_HIER_EINFÜGEN
+Content-Type: {{contentType}}
+
+{
+  "reviewer_name": "Max Mustermann (aktualisiert)",
+  "reviewer_email": "max.mustermann.neu@example.com",
+  "rating": 4,
+  "comment": "Nach nochmaligem Nachdenken: Das Hotel war doch ganz gut, aber nicht perfekt. Service war freundlich."
+}
+
+###
+
+### Bewertung teilweise aktualisieren (nur Rating und Kommentar)
+PUT {{baseUrl}}/reviews/REVIEW_ID_HIER_EINFÜGEN
+Content-Type: {{contentType}}
+
+{
+  "rating": 5,
+  "comment": "Ich muss meine Bewertung korrigieren - es war wirklich fantastisch!"
+}
+
+###
+
+### Nur Kommentar aktualisieren
+PUT {{baseUrl}}/reviews/REVIEW_ID_HIER_EINFÜGEN
+Content-Type: {{contentType}}
+
+{
+  "comment": "Aktualisierter Kommentar mit zusätzlichen Details über meinen Aufenthalt."
+}
+
+# ============================================
+# 6. DELETE - BEWERTUNGEN LÖSCHEN
+# ============================================
+
+### Bewertung löschen (ReviewId nach dem Erstellen verwenden)
+DELETE {{baseUrl}}/reviews/REVIEW_ID_HIER_EINFÜGEN
+
+# ============================================
+# 7. ERROR TESTING - FEHLERHAFTE REQUESTS
+# ============================================
+
+### Ungültiger Service-Typ
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "restaurant",
+  "entity_id": "test123",
+  "reviewer_name": "Test User",
+  "reviewer_email": "test@example.com",
+  "rating": 5,
+  "comment": "Dies sollte einen Fehler auslösen"
+}
+
+###
+
+### Fehlendes Pflichtfeld
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "hotel",
+  "entity_id": "test123",
+  "reviewer_name": "Test User",
+  "rating": 5,
+  "comment": "E-Mail fehlt - sollte Fehler auslösen"
+}
+
+###
+
+### Ungültiges Rating
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "hotel",
+  "entity_id": "test123",
+  "reviewer_name": "Test User",
+  "reviewer_email": "test@example.com",
+  "rating": 10,
+  "comment": "Rating zu hoch - sollte Fehler auslösen"
+}
+
+###
+
+### Ungültige E-Mail
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "hotel",
+  "entity_id": "test123",
+  "reviewer_name": "Test User",
+  "reviewer_email": "keine-gueltige-email",
+  "rating": 5,
+  "comment": "Ungültige E-Mail - sollte Fehler auslösen"
+}
+
+###
+
+### Nicht existierende Bewertung abrufen
+GET {{baseUrl}}/reviews/single/507f1f77bcf86cd799439011
+
+###
+
+### Nicht existierende Bewertung aktualisieren
+PUT {{baseUrl}}/reviews/507f1f77bcf86cd799439011
+Content-Type: {{contentType}}
+
+{
+  "rating": 5,
+  "comment": "Diese Bewertung existiert nicht"
+}
+
+###
+
+### Nicht existierende Bewertung löschen
+DELETE {{baseUrl}}/reviews/507f1f77bcf86cd799439011
+
+###
+
+### Ungültiger Service-Typ bei Statistiken
+GET {{baseUrl}}/reviews/restaurant/test123/stats
+
+###
+
+### Ungültiger Service-Typ beim Abrufen von Bewertungen
+GET {{baseUrl}}/reviews/invalid_service/test123
+
+# ============================================
+# 8. PERFORMANCE TESTING
+# ============================================
+
+### Große Anzahl von Bewertungen erstellen (für Testing)
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "hotel",
+  "entity_id": "performance_test_hotel",
+  "reviewer_name": "Performance Tester 1",
+  "reviewer_email": "perf1@example.com",
+  "rating": 4,
+  "comment": "Dies ist eine Test-Bewertung für Performance-Tests mit längerem Text um zu sehen wie das System mit größeren Datenmengen umgeht."
+}
+
+###
+
+POST {{baseUrl}}/reviews
+Content-Type: {{contentType}}
+
+{
+  "service_type": "hotel",
+  "entity_id": "performance_test_hotel",
+  "reviewer_name": "Performance Tester 2",
+  "reviewer_email": "perf2@example.com",
+  "rating": 3,
+  "comment": "Zweite Test-Bewertung für Performance-Analyse."
+}
+
+###
+
+### Performance Test - Alle Bewertungen mit hohem Limit
+GET {{baseUrl}}/reviews?limit=100
+
