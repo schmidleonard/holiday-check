@@ -1,8 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 
 const port = process.env.PORT;
@@ -14,6 +13,7 @@ app.use(express.json());
 app.use(cors());
 
 
+
 // connection to Database
 mongoose.connect(dburl);
 const db = mongoose.connection; 
@@ -21,14 +21,14 @@ db.on('error', (error) => console.error(error));
 db.once('open',() => console.log("Connection to Database " + dburl + " successfull"));
 
 
-const flightRouter = require('./routes/flightRouter');// Load Router
-app.use('/', flightRouter);
+const carRouter = require('./routes/carRouter');// Load Router
+app.use('/', carRouter);
 
 
 
 
 // Start Server
 app.listen(port, () => {
-    console.log("Flight Service started on port: " + port); 
+    console.log("Car Service started on port: " + port); 
 })
 
