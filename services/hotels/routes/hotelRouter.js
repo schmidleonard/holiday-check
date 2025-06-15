@@ -1,7 +1,7 @@
 // Router for Hotel Service Endpoints
 
 const express = require('express');
-const hotelModel = require('../models/hotelModel');
+const Hotel = require('../models/hotelModel');
 const multer = require("multer");
 const path = require("path");
 const fs = require('fs');
@@ -43,7 +43,7 @@ const uploadPhotos = upload.array("photos", 4);
 // Routes
 router.get("/hotel", async (req, res) => {
   try {
-    const allHotels = await hotelModel.find();
+    const allHotels = await Hotel.find();
     res.status(200).json(allHotels);
   } catch(err) {
     res.status(500).json({ message: err });
@@ -52,7 +52,7 @@ router.get("/hotel", async (req, res) => {
 
 router.get("/hotel/:id", async (req, res) => {
   try {
-    const findHotel = await hotelModel.findOne({ id: req.params.id });
+    const findHotel = await Hotel.findOne({ id: req.params.id });
     res.status(200).json(findHotel);
   } catch(err) {
     res.status(500).json({ message: err });
@@ -95,7 +95,7 @@ router.post("/hotel", uploadPhotos, async (req, res) => {
     hotelData.pictures.push(path.join("pictures", file.filename));
     });
 
-    const newHotel = new hotelModel(hotelData);
+    const newHotel = new Hotel(hotelData);
     await newHotel.save();
     res.status(201).json(newHotel);
   } catch (err) {
@@ -106,7 +106,7 @@ router.post("/hotel", uploadPhotos, async (req, res) => {
 
 router.put("/hotel/:id", uploadPhotos, async (req, res) => {
   try {
-    const hotel = await hotelModel.findById(req.params.id);
+    const hotel = await Hotel.findById(req.params.id);
     if (!hotel) return res.status(404).json({ message: "Hotel not found" });
 
     // Delete old pictures from Server
@@ -152,7 +152,7 @@ router.put("/hotel/:id", uploadPhotos, async (req, res) => {
       pictures
     };
 
-    const updatedHotel = await hotelModel.findByIdAndUpdate(
+    const updatedHotel = await Hotel.findByIdAndUpdate(
       req.params.id,
       updatedData,
       { new: true, runValidators: true }
@@ -170,7 +170,7 @@ router.put("/hotel/:id", uploadPhotos, async (req, res) => {
 router.delete("/hotel/:id", async (req, res) => {
   try {
     // delete Hotel
-    const deletedHotel = await hotelModel.findByIdAndDelete(req.params.id);
+    const deletedHotel = await Hotel.findByIdAndDelete(req.params.id);
     
     if (!deletedHotel) {
       return res.status(404).json({ message: "Hotel not found" });

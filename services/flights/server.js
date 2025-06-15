@@ -22,7 +22,7 @@ db.once('open',() => console.log("Connection to Database " + dburl + " successfu
 
 
 const flightRouter = require('./routes/flightRouter');// Load Router
-app.use('/', flightRouter);
+app.use('/api', flightRouter);
 
 
 

@@ -35,14 +35,14 @@ const upload = multer({
 // Accept 1 file in field "photo"
 const uploadPhoto = upload.single("photo");
 
-const carModel = require('../models/carModel');
+const Car = require('../models/carModel');
 
 
 // Routes
 
 router.get("/car", async (req, res) => {
     try {
-        const allCars = await carModel.find();
+        const allCars = await Car.find();
         res.status(200).json(allCars);
     } catch (err) {
         res.status(500).json({ message: err });
@@ -51,7 +51,7 @@ router.get("/car", async (req, res) => {
 
 router.get("/car/:name", async (req, res) => {
     try {
-        const findCar = await carModel.findOne({ name: req.params.name });
+        const findCar = await Car.findOne({ name: req.params.name });
         res.status(200).json(findCar);
     } catch (err) {
         res.status(500).json({ message: err });
@@ -85,7 +85,7 @@ router.post("/car", uploadPhoto, async (req, res) => {
 
 router.put("/car/:name", async (req, res) => {
     try {
-        const updatedCar = await carModel.findOneAndUpdate(
+        const updatedCar = await Car.findOneAndUpdate(
             { name: req.params.name },
             req.body,
             { new: true, runValidators: true }
@@ -103,7 +103,7 @@ router.put("/car/:name", async (req, res) => {
 router.delete("/car/:id", async (req, res) => {
     try {
         // delete Car
-        const deletedCar = await carModel.findByIdAndDelete(req.params.id);
+        const deletedCar = await Car.findByIdAndDelete(req.params.id);
 
         if (!deletedCar) {
             return res.status(404).json({ message: "Car not found" });

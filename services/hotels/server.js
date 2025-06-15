@@ -22,7 +22,7 @@ db.once('open',() => console.log("Connection to Database " + dburl + " successfu
 
 
 const hotelRouter = require('./routes/hotelRouter');// Load Router
-app.use('/', hotelRouter);
+app.use('/api', hotelRouter);
 
 
 

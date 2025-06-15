@@ -20,4 +20,4 @@ const flightModelSchema = mongoose.Schema({
   available_seats: { type: Number },
 }, { timestamps: true });
 
-module.exports = mongoose.model('flightModel', flightModelSchema);
+module.exports = mongoose.model('Flight', flightModelSchema);
