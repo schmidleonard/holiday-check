@@ -60,7 +60,7 @@ router.get("/hotel/:id", async (req, res) => {
 })
 
 
-router.post("/hotel", uploadPhotos, async (req, res) => {
+router.post("/hotel/admin", uploadPhotos, async (req, res) => {
   try {
     const { name, 
             type, 
@@ -104,7 +104,7 @@ router.post("/hotel", uploadPhotos, async (req, res) => {
 });
 
 
-router.put("/hotel/:id", uploadPhotos, async (req, res) => {
+router.put("/hotel/admin/:id", uploadPhotos, async (req, res) => {
   try {
     const hotel = await Hotel.findById(req.params.id);
     if (!hotel) return res.status(404).json({ message: "Hotel not found" });
@@ -167,7 +167,7 @@ router.put("/hotel/:id", uploadPhotos, async (req, res) => {
 });
 
 
-router.delete("/hotel/:id", async (req, res) => {
+router.delete("/hotel/admin/:id", async (req, res) => {
   try {
     // delete Hotel
     const deletedHotel = await Hotel.findByIdAndDelete(req.params.id);
