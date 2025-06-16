@@ -29,7 +29,7 @@ router.get("/flight/:destination", async (req, res) => {
     }
 })
 
-router.post("/flight", async (req, res) => {
+router.post("/flight/admin", async (req, res) => {
     try {
         const flightData = req.body;
         const newFlight = new Flights(flightData);
@@ -40,7 +40,7 @@ router.post("/flight", async (req, res) => {
     }
 })
 
-router.put("/flight:id", async (req, res) => {
+router.put("/flight/admin/:id", async (req, res) => {
     try {
         const updateFlight = await Flight.findOneAndUpdate(
           { id: req.params.id },
@@ -56,7 +56,7 @@ router.put("/flight:id", async (req, res) => {
     }
 })
 
-router.delete("flight/:id", async (req, res) => {
+router.delete("flight/admin/:id", async (req, res) => {
     try {
         const deletedFlight = await Flight.findByIdAndDelete(req.params.id);
 

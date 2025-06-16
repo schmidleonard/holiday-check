@@ -58,7 +58,7 @@ router.get("/car/:name", async (req, res) => {
     }
 })
 
-router.post("/car", uploadPhoto, async (req, res) => {
+router.post("/car/admin", uploadPhoto, async (req, res) => {
     try {
         const { name, brand, model, manufactor_date, hp, seats, price, available, fuel, location } = req.body;
         const file = req.file;
@@ -83,7 +83,7 @@ router.post("/car", uploadPhoto, async (req, res) => {
     }
 })
 
-router.put("/car/:name", async (req, res) => {
+router.put("/car/admin/:name", async (req, res) => {
     try {
         const updatedCar = await Car.findOneAndUpdate(
             { name: req.params.name },
@@ -100,7 +100,7 @@ router.put("/car/:name", async (req, res) => {
 })
 
 
-router.delete("/car/:id", async (req, res) => {
+router.delete("/car/admin/:id", async (req, res) => {
     try {
         // delete Car
         const deletedCar = await Car.findByIdAndDelete(req.params.id);

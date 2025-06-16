@@ -1,16 +1,27 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/isAdmin');
 
 const router = express.Router();
 
 router.use(
-  '/',
+  '/admin',
   auth,
+  isAdmin,
   createProxyMiddleware({
     target: 'http://localhost:3002',
     changeOrigin: true,
-    pathRewrite: { '^/api/cars': '' }
+    pathRewrite: { '^': '/api/car/admin' }
+  })
+);
+
+router.use(
+  '/',
+  createProxyMiddleware({
+    target: 'http://localhost:3002',
+    changeOrigin: true,
+    pathRewrite: { '^': '/api/car' }
   })
 );
 
