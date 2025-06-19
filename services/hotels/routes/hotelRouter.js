@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(express.json());
 
 // Sharing static files
-router.use("/pictures", express.static(path.join(__dirname, "../pictures")));
+//router.use("/pictures", express.static(path.join(__dirname, "../pictures")));
 
 
 

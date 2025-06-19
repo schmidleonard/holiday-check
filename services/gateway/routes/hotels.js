@@ -5,6 +5,18 @@ const isAdmin = require('../middleware/isAdmin');
 
 const router = express.Router();
 
+
+router.use(
+  '/pictures',
+  createProxyMiddleware({
+    target: 'http://localhost:3002',
+    changeOrigin: true,
+    pathRewrite: {
+    '^': '/pictures'
+    }
+  })
+);
+
 router.use(
   '/admin',
   auth,
