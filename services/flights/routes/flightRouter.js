@@ -32,7 +32,7 @@ router.get("/flight/:destination", async (req, res) => {
 router.post("/flight/admin", async (req, res) => {
     try {
         const flightData = req.body;
-        const newFlight = new Flights(flightData);
+        const newFlight = new Flight(flightData);
         await newFlight.save();
         res.status(201).json(newFlight);
     } catch (err) {

@@ -166,6 +166,37 @@ router.put("/hotel/admin/:id", uploadPhotos, async (req, res) => {
   }
 });
 
+//Route only for rating service
+router.put('/hotel/rating/:id', async (req, res) => {
+  try {
+    const hotelId = req.params.id;
+    const { averageRating, ratingCount } = req.body;
+
+    if (
+      typeof averageRating !== 'number' ||
+      typeof ratingCount !== 'number' ||
+      averageRating < 0 || averageRating > 5 ||
+      ratingCount < 0
+    ) {
+      return res.status(400).json({ message: 'Invalid rating data' });
+    }
+
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel) {
+      return res.status(404).json({ message: 'Hotel not found' });
+    }
+
+    const updatedHotel = await Hotel.findByIdAndUpdate(
+      hotelId,
+      { $set: { averageRating, ratingCount } },
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedHotel);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 router.delete("/hotel/admin/:id", async (req, res) => {
   try {
