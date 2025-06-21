@@ -1,7 +1,8 @@
 const express = require('express');
 const Rating = require('../models/ratingModel');
-const axio = require('axio');
+const axio = require('axios');
 const { updateAverage } = require('../controllers/ratingController');
+const mongoose = require('mongoose');
  
 const router = express.Router();
 
@@ -18,17 +19,17 @@ router.get('/rating/admin', async (req, res) => {
 });
 
 //get all ratings for one object
-router.get('/rating/:typeId', async (req, res) => {
+router.get('/ratings/:objectId', async (req, res) => {
     try {
-        allRatingsOfObject = await Rating.find({ objectType: req.params.typeId });
-
+    const objectId = new mongoose.Types.ObjectId(req.params.objectId);
+    const allRatingsOfObject = await Rating.find({ objectId });
         res.status(200).json(allRatingsOfObject);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-router.post('/rating', async (req, res) => {
+router.post('/ratings', async (req, res) => {
     try {
         const ratingData = req.body;
         const newRating = new Rating(ratingData);

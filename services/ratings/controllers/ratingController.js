@@ -1,5 +1,5 @@
 
-const Rating = require('../models/Rating');
+const Rating = require('../models/ratingModel');
 const axios = require('axios');
 require("dotenv").config();
 
@@ -33,7 +33,7 @@ async function updateAverage(objectId, objectType) {
     }
 
     await axios.put(url, {
-      averageRating: average.toFixed(2),
+      averageRating: parseFloat(average.toFixed(2)),
       ratingCount: ratings.length
     });
   } catch (error) {
