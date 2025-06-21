@@ -52,7 +52,7 @@ router.get("/hotel", async (req, res) => {
 
 router.get("/hotel/:id", async (req, res) => {
   try {
-    const findHotel = await Hotel.findOne({ id: req.params.id });
+    const findHotel = await Hotel.findOne({ id: req.params._id });
     res.status(200).json(findHotel);
   } catch(err) {
     res.status(500).json({ message: err });
@@ -171,7 +171,6 @@ router.put('/hotel/rating/:id', async (req, res) => {
   try {
     const hotelId = req.params.id;
     const { averageRating, ratingCount } = req.body;
-
     if (
       typeof averageRating !== 'number' ||
       typeof ratingCount !== 'number' ||
@@ -180,18 +179,15 @@ router.put('/hotel/rating/:id', async (req, res) => {
     ) {
       return res.status(400).json({ message: 'Invalid rating data' });
     }
-
     const hotel = await Hotel.findById(hotelId);
     if (!hotel) {
       return res.status(404).json({ message: 'Hotel not found' });
     }
-
     const updatedHotel = await Hotel.findByIdAndUpdate(
       hotelId,
       { $set: { averageRating, ratingCount } },
       { new: true, runValidators: true }
     );
-
     res.status(200).json(updatedHotel);
   } catch (err) {
     res.status(500).json({ message: err.message });
