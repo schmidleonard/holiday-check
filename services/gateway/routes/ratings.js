@@ -6,11 +6,11 @@ const router = express.Router();
 
 router.use(
   '/',
-  auth,
+  //auth,
   createProxyMiddleware({
     target: 'http://localhost:3006',
     changeOrigin: true,
-    pathRewrite: { '^/api/rating': '' }
+    pathRewrite: { '^/': '/api/ratings/' }
   })
 );
 

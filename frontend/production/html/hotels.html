@@ -10,16 +10,20 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-.fa, .fa-star, .fa-star-o, .fa-star-half-o {
-  font-family: FontAwesome !important;
-  font-style: normal;
-  font-weight: normal;
-  text-decoration: inherit;
-}
-.star-rating .fa {
-  color: #ffc107 !important;
-}
-</style>
+        .fa,
+        .fa-star,
+        .fa-star-o,
+        .fa-star-half-o {
+            font-family: FontAwesome !important;
+            font-style: normal;
+            font-weight: normal;
+            text-decoration: inherit;
+        }
+
+        .star-rating .fa {
+            color: #ffc107 !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -60,7 +64,7 @@
         </div>
     </nav>
 
-    <!-- CONTENT -->
+    <!-- Templates -->
 
     <template id="info-table-template">
         <table class="table table-sm mb-3">
@@ -89,10 +93,97 @@
         </table>
     </template>
 
+    <template id="hotel-modal-template">
+        <div id="hotelModal" class="modal fade" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="hotelTitelModal" class="modal-title">Hotel Titel</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="carouselModalHotel" class="carousel slide">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="..." class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="..." class="d-block w-100" alt="...">
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="..." class="d-block w-100" alt="...">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselModalHotel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselModalHotel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        <p id="hoteldescriptionModal">Hotel Beschreibung</p>
+                        <div class="container">
+
+                        </div>
+                        <table class="table table-sm mb-3">
+                            <tbody>
+                                <tr>
+                                    <th scope="row">Stadt</th>
+                                    <td class="city-cell"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Typ</th>
+                                    <td class="type-cell"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Preis</th>
+                                    <td class="price-cell"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Max Gäste</th>
+                                    <td class="guests-cell"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Haustiere erlaubt</th>
+                                    <td class="pets-cell"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Rauchen erlaubt</th>
+                                    <td class="smoking-cell"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="container" id="ratingResultDiv"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="hotel-rating-template">
+        <div id="hotelRating" class="container">
+            <div id="averageRating" class="container">
+            </div>
+            <div id="allRatings" class="container">
+                <div id="spyContainer" data-bs-spy="scroll" data-bs-root-margin="0px 0px -40%"
+                    data-bs-smooth-scroll="true" class="scrollspy-example bg-body-tertiary p-3 rounded-2" tabindex="0">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- CONTENT -->
 
     <div class="container mt-4 text-center">
         <div id="resultDiv" class="row">
         </div>
+        <div id="modalContainer"></div>
     </div>
 
 

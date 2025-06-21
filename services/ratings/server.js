@@ -9,9 +9,9 @@ const port = process.env.PORT;
 const dburl = process.env.DB_URL;
 
 const app = express();
-
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+
 
 
 // connection to Database
