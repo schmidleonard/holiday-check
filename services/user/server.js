@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require("cors");
 require('dotenv').config();
 
 const port = process.env.PORT;
@@ -7,6 +8,7 @@ const dburl = process.env.DB_URL;
 
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
   console.log(`[USER SERVICE] ${req.method} ${req.originalUrl}`);

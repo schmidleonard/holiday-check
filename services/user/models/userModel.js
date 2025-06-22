@@ -12,7 +12,8 @@ const userModelSchema = new mongoose.Schema({
     role: { 
         type: String,
         enum: ['user', 'admin'],
-        required: true
+        required: true,
+        default: 'user'
     },
     favorites: {
         hotels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Hotel' }],

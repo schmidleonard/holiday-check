@@ -11,23 +11,26 @@ const generateToken = (user) => {
 };
 
 exports.registerUser = async (req, res) => {
-  const { userName, email, userPwd, role} = req.body;
-  if (!userName || !email || !userPwd || !role) return res.status(400).json({ message: 'Missing fields' });
+  const { name, email, password } = req.body;
+  const role = 'user'; // default user
+
+  if (!name || !email || !password) 
+    return res.status(400).json({ message: 'Missing fields' });
 
   const existingUser = await User.findOne({ email });
   if (existingUser) return res.status(409).json({ message: 'User already exists' });
 
-  const hashedPwd = await bcrypt.hash(userPwd, 10);
-  const user = await User.create({ userName, email, userPwd: hashedPwd, role });
+  const hashedPwd = await bcrypt.hash(password, 10);
+  const user = await User.create({ userName: name, email, userPwd: hashedPwd, role });
 
   res.status(201).json({ token: generateToken(user) });
 };
 
 exports.loginUser = async (req, res) => {
-  const { email, userPwd } = req.body;
+  const { email, password } = req.body;
   const user = await User.findOne({ email }).select('+userPwd');
 
-  if (!user || !(await bcrypt.compare(userPwd, user.userPwd)))
+  if (!user || !(await bcrypt.compare(password, user.userPwd)))
     return res.status(401).json({ message: 'Invalid credentials' });
 
   res.json({ token: generateToken(user) });
