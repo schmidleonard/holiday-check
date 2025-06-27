@@ -26,5 +26,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const userName = localStorage.getItem("userName");
 if (userName) {
-  document.getElementById("navUser").textContent = `👤 ${userName}`;
+  document.getElementById("navUser").textContent = `${userName}`;
 }
