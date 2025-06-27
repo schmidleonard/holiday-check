@@ -1,12 +1,15 @@
 const express = require('express');
 const app = express();
 require('dotenv').config();
+const cors = require("cors");
 
 const hotelRoutes = require('./routes/hotels');
 const carRoutes = require('./routes/cars');
 const flightRoutes = require('./routes/flights');
 const ratingRoutes = require('./routes/ratings');
 const userRoutes = require('./routes/users');
+
+app.use(cors());
 
 app.use((req, res, next) => {
   console.log(`[GATEWAY] ${req.method} ${req.originalUrl}`);
