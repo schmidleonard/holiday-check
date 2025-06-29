@@ -87,7 +87,7 @@ function renderDetails(hotelJson, ratingJson) {
   modalClone.querySelector('.pets-cell').textContent = petsAllowed;
   modalClone.querySelector('.smoking-cell').textContent = smokingAllowed;
 
-  // Bilder
+  // Images
   const carouselInner = modalClone.querySelector('.carousel-inner');
   carouselInner.innerHTML = '';
   if (hotel.pictures && hotel.pictures.length > 0) {

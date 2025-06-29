@@ -6,11 +6,22 @@ const isAdmin = require('../middleware/isAdmin');
 const router = express.Router();
 
 router.use(
+  '/src',
+  createProxyMiddleware({
+    target: 'http://localhost:3003',
+    changeOrigin: true,
+    pathRewrite: {
+    '^': '/src'
+    }
+  })
+);
+
+router.use(
   '/admin',
   auth,
   isAdmin,
   createProxyMiddleware({
-    target: 'http://localhost:3001',
+    target: 'http://localhost:3003',
     changeOrigin: true,
     pathRewrite: { '^': '/api/flight/admin' }
   })
@@ -19,7 +30,7 @@ router.use(
 router.use(
   '/',
   createProxyMiddleware({
-    target: 'http://localhost:3001',
+    target: 'http://localhost:3003',
     changeOrigin: true,
     pathRewrite: { '^': '/api/flight' }
   })

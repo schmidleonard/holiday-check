@@ -29,6 +29,15 @@ router.get("/flight/:destination", async (req, res) => {
     }
 })
 
+router.get("/flight/:id", async (req, res) => {
+    try {
+        const findFlight = await Flight.findOne( {_id: req.params.id});
+        res.status(200).json(findFlight);
+    } catch (err) {
+        res.status(500).json({ message: err });
+    }
+})
+
 router.post("/flight/admin", async (req, res) => {
     try {
         const flightData = req.body;
@@ -42,8 +51,9 @@ router.post("/flight/admin", async (req, res) => {
 
 router.put("/flight/admin/:id", async (req, res) => {
     try {
+        console.log(req.params.id);
         const updateFlight = await Flight.findOneAndUpdate(
-          { id: req.params.id },
+          { _id: req.params.id },
           req.body,
           { new: true, runValidators: true }  
         );
@@ -56,8 +66,9 @@ router.put("/flight/admin/:id", async (req, res) => {
     }
 })
 
-router.delete("flight/admin/:id", async (req, res) => {
+router.delete("/flight/admin/:id", async (req, res) => {
     try {
+        console.log(req.params.id);
         const deletedFlight = await Flight.findByIdAndDelete(req.params.id);
 
         if (!deletedFlight) {
