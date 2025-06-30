@@ -27,7 +27,7 @@ function getAirlineImg(airlineName) {
         case "Ryanair":
             src = "../src/airlines/ryanair.jpg";
             break;
-        case "Singapore Airline":
+        case "Singapore":
             src = "../src/airlines/singapore.png"
             break;
         default:
@@ -39,7 +39,6 @@ function getAirlineImg(airlineName) {
 
 
 // Renders Stars for average Rating
-
 function renderStars(averageRating, ratingCount) {
 
     const maxStars = 5;
@@ -63,57 +62,28 @@ function renderStars(averageRating, ratingCount) {
     return html;
 }
 
+async function getRatings(id) {
+    try {
+        const response = await fetch('http://localhost:3000/api/ratings/' + id);
 
+        const contentType = response.headers.get("Content-Type");
+        const isJson = contentType && contentType.includes("application/json");
 
-async function showDetails(id) {
-    const flightRes = await fetch('http://localhost:3000/api/flights/' + id);
+        if (!response.ok || !isJson) {
+            const text = await response.text();
+            throw new Error(`Fehler ${response.status}: ${text}`);
+        }
 
-    const flightJson = await flightRes.json();
-    console.log(flightJson);
-
-    renderDetails(flightJson);
-}
-
-function renderDetails(flightJson, ratingJson) {
-    const flight = flightJson;
-    const rating = ratingJson;
-
-    const modalTemplate = document.getElementById('flight-modal-template');
-    const modalClone = modalTemplate.content.cloneNode(true);
-    const modalElement = modalClone.querySelector('#flightModal');
-
-    modalClone.querySelector('#flightTitelModal').textContent = `Flug: ${flight.flightNumber || 'k.A.'}`;
-
-    /*modalClone.querySelector('.departure-cell').textContent = `${flight.departure.city} ', ' ${flight.departure.country}` || 'k.A.';
-    modalClone.querySelector('.destination-cell').textContent = `${flight.destination.city} ', ' ${flight.destination.country}` || 'k.A.';*/
-    modalClone.querySelector('.airline-cell').textContent = flight.airline ?? 'k.A.';
-    modalClone.querySelector('.departure-time-cell').textContent = flight.departure_time ?? 'k.A.';
-    modalClone.querySelector('.sheduled-time-cell').textContent = flight.destination_time ?? 'k.A.';
-    modalClone.querySelector('.aircraft-cell').textContent = flight.aircraft ?? 'k.A.';
-    modalClone.querySelector('.price-cell').textContent = `${flight.price || 'k.A.'} €`;
-
-    // Picture
-    // Picture
-const img = modalClone.querySelector("#airline-picture-modal");
-      img.src = getAirlineImg(flight.airline);
-
-
-
-
-    const modalContainer = document.getElementById('modalContainer');
-    modalContainer.innerHTML = '';
-    modalContainer.appendChild(modalClone);
-
-    const bsModal = new bootstrap.Modal(modalElement);
-    bsModal.show();
-
-    modalElement.addEventListener('hidden.bs.modal', () => {
-        modalElement.remove();
-    });
+        const json = await response.json();
+        return json;
+    } catch (err) {
+        console.error("Error while loading ratings", err.message);
+        return [];
+    }
 }
 
 // create Card Element for each flight
-function createResultCards(flightsJson) {
+async function createResultCards(flightsJson) {
     console.log(flightsJson);
     const resultDiv = document.getElementById('resultDiv');
     resultDiv.innerHTML = '';
@@ -143,19 +113,9 @@ function createResultCards(flightsJson) {
         cardTitle.setAttribute('class', 'card-title');
         cardTitle.innerHTML = `Flug: ${flight.flightNumber}`;
 
-        let detailButton = document.createElement('button');
-        detailButton.setAttribute("type", "button");
-        detailButton.setAttribute("class", "btn btn-primary");
-        detailButton.innerHTML = "Details anzeigen";
-        detailButton.dataset.flightId = flight._id;
-        detailButton.addEventListener("click", (e) => {
-            const id = e.currentTarget.dataset.flightId;
-            console.log(id);
-            showDetails(id);
-        });
-            const list = document.createElement('ul');
-    list.className = 'list-group list-group-flush';
-    list.innerHTML = `
+        const list = document.createElement('ul');
+        list.className = 'list-group list-group-flush';
+        list.innerHTML = `
       <li class="list-group-item">Von: ${flight.departure?.city ?? 'k.A.'} (${flight.departure?.airportCode})</li>
       <li class="list-group-item">Nach: ${flight.destination?.city ?? 'k.A.'} (${flight.destination?.airportCode})</li>
       <li class="list-group-item">Airline: ${flight.airline}</li>
@@ -165,10 +125,53 @@ function createResultCards(flightsJson) {
       <li class="list-group-item">Freie Plätze: ${flight.available_seats ?? 'k.A.'}</li>
     `;
 
+        const ratingDiv = document.createElement("div");
+        ratingDiv.className = 'container'
+
+        const scrollSpy = document.createElement("div")
+        scrollSpy.setAttribute('data-bs-spy', 'scroll');
+        scrollSpy.setAttribute('data-bs-root-margin', '0px 0px -40%');
+
+        const ratingJson = await getRatings(flight._id);
+
+        ratingJson.forEach((r) => {
+            const row = document.createElement('div');
+            row.className = 'row border-bottom py-2';
+
+            const starsCol = document.createElement('div');
+            starsCol.className = 'col-md-4';
+            starsCol.innerHTML = `
+        <div class="star-rating mb-1">
+          ${renderStars(r.rating)} <strong>${r.userName}</strong>
+        </div>`;
+
+            const commentCol = document.createElement('div');
+            commentCol.className = 'col-md-8';
+
+            if (r.comment) {
+                commentCol.innerHTML = `<p class="mb-1">${r.comment}</p>`;
+            }
+
+            const date = new Date(r.createdAt);
+            const formattedDate = date.toLocaleDateString('de-DE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'text-start text-muted small';
+            dateDiv.textContent = `Erstellt am: ${formattedDate}`;
+
+            commentCol.appendChild(dateDiv);
+            row.appendChild(starsCol);
+            row.appendChild(commentCol);
+            scrollSpy.appendChild(row);
+        });
+
         cardBodyDiv.appendChild(cardTitle);
         cardBodyDiv.appendChild(list);
-        cardBodyDiv.appendChild(detailButton);
-
+        cardBodyDiv.appendChild(scrollSpy);
         cardElement.appendChild(img);
         cardElement.appendChild(cardBodyDiv);
 
