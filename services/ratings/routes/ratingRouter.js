@@ -29,6 +29,7 @@ router.get('/ratings/:objectId', async (req, res) => {
     }
 });
 
+
 router.post('/ratings', async (req, res) => {
     try {
         const ratingData = req.body;
