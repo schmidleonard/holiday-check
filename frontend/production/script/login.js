@@ -21,7 +21,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         localStorage.setItem('jwtToken', data.token);
         localStorage.setItem('userId', decoded.id);
         localStorage.setItem('userName', decoded.userName);
-        localStorage.setItem('userRole', decoded.role); // <<< wichtig für Admin-Check
+        localStorage.setItem('userRole', decoded.role); 
 
         alert("Erfolgreich eingeloggt!");
         location.href = "index.html"; // forwarding
