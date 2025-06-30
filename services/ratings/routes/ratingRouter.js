@@ -9,7 +9,7 @@ const router = express.Router();
 router.use(express.json());
 
 
-router.get('/rating/admin', async (req, res) => {
+router.get('/ratings/admin', async (req, res) => {
     try {
         allRatings = await Rating.find();
         res.status(200).json(allRatings);
@@ -43,7 +43,7 @@ router.post('/ratings', async (req, res) => {
     }
 });
 
-router.put('/rating/admin/:id', async (req, res) => {
+router.put('/ratings/admin/:id', async (req, res) => {
     try {
         const updatedData = req.body;
         const updatedRating = await Rating.findByIdAndUpdate(
@@ -60,7 +60,7 @@ router.put('/rating/admin/:id', async (req, res) => {
     }
 });
 
-router.delete('/rating/admin/:id', async (req, res) => {
+router.delete('/ratings/admin/:id', async (req, res) => {
     try {
         deletedRating = await Rating.findByIdAndDelete(req.params.id);
         res.status(200).json(deletedRating);
