@@ -1,7 +1,33 @@
-# holiday-check
+# Holiday-Check 🌴
+**Holiday-Check** is a microservice designed as part of the Distributed Systems course at DHBW Heilbronn. It provides information about available **hotels**, **flights**, and **rental cars**.
 
-A slim monorepo project with multiple Node.js microservices and MongoDB integration.
+---
+## 🧩 Module Overview
 
+```bash
+holiday-check/
+│
+├── 🖥️ frontend/               # Web interface
+│
+├── 🧩 services/               # Microservices backend
+│   ├── 🌐 gateway/            # API Gateway – routes all incoming requests
+│   │                         # to the appropriate microservice
+│   │
+│   ├── 🔐 user/               # User service – handles registration, login,
+│   │                         # and authentication logic
+│   │
+│   ├── 🚗 cars/               # Car rental service – manages rental cars
+│   │                         # and availability
+│   │
+│   ├── 🛫 flights/            # Flight service – manages flights, times, and routes
+│   │
+│   ├── 🏨 hotels/             # Hotel service – handles hotel data and availability
+│   │
+│   └── ⭐ ratings/            # Ratings service – handles reviews and star ratings
+│
+└── 📄 README.md               # Project documentation
+
+```
 ---
 
 ## Requirements
@@ -36,7 +62,7 @@ A slim monorepo project with multiple Node.js microservices and MongoDB integrat
 
 1. Navigate to the service directory:  
    ```
-   cd services//src
+   cd services/src
    ```
 
 2. Start the service:  
@@ -50,6 +76,21 @@ A slim monorepo project with multiple Node.js microservices and MongoDB integrat
 **Note:**  
 Each microservice runs separately. Use multiple terminals to run several services in parallel during development.
 
+The Hotel (🏨 hotels/) and Car (🚗 cars/) services support image uploads, such as hotel photos and car pictures. These images are currently stored locally on the server's file system.
+
+    ⚠️ Important:
+    When deploying these services to a remote environment or containerized infrastructure (e.g. Docker, Railway, or cloud servers), make sure to:
+
+        Mount a persistent volume or bind a host directory for image storage
+
+        Or update the service logic to use a cloud storage provider (e.g. AWS S3, Cloudinary, etc.)
+
+Failing to configure image storage properly can result in lost files or broken image links after restarts or deployments.
+
 ---
 
-*For questions or adjustments, just reach out!*
+
+## 📝 Credits
+
+-   **Authors:** Richard Gietzelt; Leonard Schmid – DHBW Heilbronn (Distributed Systems course)
+    
