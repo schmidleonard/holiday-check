@@ -1,7 +1,7 @@
 // Router for Hotel Service Endpoints
 
 const express = require('express');
-const hotelModel = require('../models/hotelModel');
+const Hotel = require('../models/hotelModel');
 const multer = require("multer");
 const path = require("path");
 const fs = require('fs');
@@ -12,7 +12,7 @@ const router = express.Router();
 router.use(express.json());
 
 // Sharing static files
-router.use("/pictures", express.static(path.join(__dirname, "../pictures")));
+//router.use("/pictures", express.static(path.join(__dirname, "../pictures")));
 
 
 
@@ -43,7 +43,7 @@ const uploadPhotos = upload.array("photos", 4);
 // Routes
 router.get("/hotel", async (req, res) => {
   try {
-    const allHotels = await hotelModel.find();
+    const allHotels = await Hotel.find();
     res.status(200).json(allHotels);
   } catch(err) {
     res.status(500).json({ message: err });
@@ -52,7 +52,7 @@ router.get("/hotel", async (req, res) => {
 
 router.get("/hotel/:id", async (req, res) => {
   try {
-    const findHotel = await hotelModel.findOne({ id: req.params.id });
+    const findHotel = await Hotel.findOne({ id: req.params._id });
     res.status(200).json(findHotel);
   } catch(err) {
     res.status(500).json({ message: err });
@@ -60,7 +60,7 @@ router.get("/hotel/:id", async (req, res) => {
 })
 
 
-router.post("/hotel", uploadPhotos, async (req, res) => {
+router.post("/hotel/admin", uploadPhotos, async (req, res) => {
   try {
     const { name, 
             type, 
@@ -95,7 +95,7 @@ router.post("/hotel", uploadPhotos, async (req, res) => {
     hotelData.pictures.push(path.join("pictures", file.filename));
     });
 
-    const newHotel = new hotelModel(hotelData);
+    const newHotel = new Hotel(hotelData);
     await newHotel.save();
     res.status(201).json(newHotel);
   } catch (err) {
@@ -104,9 +104,9 @@ router.post("/hotel", uploadPhotos, async (req, res) => {
 });
 
 
-router.put("/hotel/:id", uploadPhotos, async (req, res) => {
+router.put("/hotel/admin/:id", uploadPhotos, async (req, res) => {
   try {
-    const hotel = await hotelModel.findById(req.params.id);
+    const hotel = await Hotel.findById(req.params.id);
     if (!hotel) return res.status(404).json({ message: "Hotel not found" });
 
     // Delete old pictures from Server
@@ -152,7 +152,7 @@ router.put("/hotel/:id", uploadPhotos, async (req, res) => {
       pictures
     };
 
-    const updatedHotel = await hotelModel.findByIdAndUpdate(
+    const updatedHotel = await Hotel.findByIdAndUpdate(
       req.params.id,
       updatedData,
       { new: true, runValidators: true }
@@ -166,11 +166,38 @@ router.put("/hotel/:id", uploadPhotos, async (req, res) => {
   }
 });
 
+//Route only for rating service
+router.put('/hotel/rating/:id', async (req, res) => {
+  try {
+    const hotelId = req.params.id;
+    const { averageRating, ratingCount } = req.body;
+    if (
+      typeof averageRating !== 'number' ||
+      typeof ratingCount !== 'number' ||
+      averageRating < 0 || averageRating > 5 ||
+      ratingCount < 0
+    ) {
+      return res.status(400).json({ message: 'Invalid rating data' });
+    }
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel) {
+      return res.status(404).json({ message: 'Hotel not found' });
+    }
+    const updatedHotel = await Hotel.findByIdAndUpdate(
+      hotelId,
+      { $set: { averageRating, ratingCount } },
+      { new: true, runValidators: true }
+    );
+    res.status(200).json(updatedHotel);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
-router.delete("/hotel/:id", async (req, res) => {
+router.delete("/hotel/admin/:id", async (req, res) => {
   try {
     // delete Hotel
-    const deletedHotel = await hotelModel.findByIdAndDelete(req.params.id);
+    const deletedHotel = await Hotel.findByIdAndDelete(req.params.id);
     
     if (!deletedHotel) {
       return res.status(404).json({ message: "Hotel not found" });

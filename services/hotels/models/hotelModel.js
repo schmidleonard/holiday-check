@@ -13,6 +13,8 @@ const hotelModelSchema = new mongoose.Schema({
   city: {type: String, required: true},
   adress: {type: String, required: true},
   pictures: [String],
+  averageRating: { type: Number, default: 0 },
+  ratingCount: { type: Number, default: 0 },
   }, { timestamps: true});
 
 module.exports = mongoose.model('hotelModel', hotelModelSchema);

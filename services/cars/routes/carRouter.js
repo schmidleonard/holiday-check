@@ -35,14 +35,14 @@ const upload = multer({
 // Accept 1 file in field "photo"
 const uploadPhoto = upload.single("photo");
 
-const carModel = require('../models/carModel');
+const Car = require('../models/carModel');
 
 
 // Routes
 
 router.get("/car", async (req, res) => {
     try {
-        const allCars = await carModel.find();
+        const allCars = await Car.find();
         res.status(200).json(allCars);
     } catch (err) {
         res.status(500).json({ message: err });
@@ -51,59 +51,126 @@ router.get("/car", async (req, res) => {
 
 router.get("/car/:name", async (req, res) => {
     try {
-        const findCar = await carModel.findOne({ name: req.params.name });
+        const findCar = await Car.findOne({ name: req.params.name });
         res.status(200).json(findCar);
     } catch (err) {
         res.status(500).json({ message: err });
     }
 })
 
-router.post("/car", uploadPhoto, async (req, res) => {
+router.get("/car/:id", async (req, res) => {
     try {
-        const { name, brand, model, manufactor_date, hp, seats, price, available, fuel, location } = req.body;
-        const file = req.file;
-        const carData = {
+        const findCar = await Car.findOne({ _id: req.params.id });
+        res.status(200).json(findCar);
+    } catch (err) {
+        res.status(500).json({ message: err });
+    }
+})
+
+
+router.post("/car/admin", uploadPhoto, async (req, res) => {
+    try {
+        const {
             name,
             brand,
             model,
-            manufactor_date,
+            manufactureYear,
             hp,
             seats,
             price,
             available,
             fuel,
             location,
-            picture: file ? path.join("pictures", file.filename) : ""
-        }
-        const newCar = new Cars(carData);
+            transmission,
+            doors,
+            features
+        } = req.body;
+
+        const carData = {
+            name,
+            brand,
+            model,
+            manufacture_year: manufactureYear,
+            hp: parseInt(hp),
+            seats: parseInt(seats),
+            price: parseFloat(price),
+            available: available === "true",
+            fuel,
+            location,
+            transmission,
+            doors: parseInt(doors),
+            features: features ? features.split(",").map(f => f.trim()) : [],
+            picture: req.file ? path.join("pictures", req.file.filename) : ""
+        };
+
+        const newCar = new Car(carData);
         await newCar.save();
         res.status(201).json(newCar);
     } catch (err) {
+        console.error("POST error:", err);
         res.status(500).json({ message: err.message });
     }
-})
+});
 
-router.put("/car/:name", async (req, res) => {
+router.put("/car/admin/:id", uploadPhoto, async (req, res) => {
     try {
-        const updatedCar = await carModel.findOneAndUpdate(
-            { name: req.params.name },
-            req.body,
-            { new: true, runValidators: true }
-        );
+        const {
+            name,
+            brand,
+            model,
+            manufactureYear,
+            hp,
+            seats,
+            price,
+            available,
+            fuel,
+            location,
+            transmission,
+            doors,
+            features
+        } = req.body;
+
+        const updatedData = {
+            name,
+            brand,
+            model,
+            manufactor_year: manufactureYear,
+            hp: parseInt(hp),
+            seats: parseInt(seats),
+            price: parseFloat(price),
+            available: available === "true",
+            fuel,
+            location,
+            transmission,
+            doors: parseInt(doors),
+            features: features ? features.split(",").map(f => f.trim()) : []
+        };
+
+        if (req.file) {
+            updatedData.picture = path.join("pictures", req.file.filename);
+        }
+
+        const updatedCar = await Car.findByIdAndUpdate(req.params.id, updatedData, {
+            new: true,
+            runValidators: true
+        });
+
         if (!updatedCar) {
             return res.status(404).json({ message: "Car not found" });
         }
+
         res.status(200).json(updatedCar);
     } catch (err) {
+        console.error("PUT error:", err);
         res.status(500).json({ message: err.message });
     }
-})
+});
 
 
-router.delete("/car/:id", async (req, res) => {
+router.delete("/car/admin/:id", async (req, res) => {
     try {
         // delete Car
-        const deletedCar = await carModel.findByIdAndDelete(req.params.id);
+        const deletedCar = await Car.findByIdAndDelete(req.params.id);
 
         if (!deletedCar) {
             return res.status(404).json({ message: "Car not found" });
